@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5442:5432"
+    environment:
+      POSTGRES_DB: jurassic-park
+      POSTGRES_PASSWORD: p@$$w0rd
+      POSTGRES_USER: jurassic-park
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jurassic-park"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8888:8888"
+    environment:
+      POSTGRES_URL: "postgres://jurassic-park:p@$$w0rd@db:5432/jurassic-park?sslmode=disable"
