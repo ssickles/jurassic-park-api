@@ -6,5 +6,6 @@ import (
 )
 
 func getStatus(c *gin.Context) {
-	c.String(http.StatusOK, "all systems operational")
+	// TODO: add checks to see if all our supporting services are up and running such as our Postgres connection
+	c.JSON(http.StatusOK, gin.H{"data": "all systems operational"})
 }

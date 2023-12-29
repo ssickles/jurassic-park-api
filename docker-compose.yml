@@ -7,7 +7,7 @@ services:
       - "5442:5432"
     environment:
       POSTGRES_DB: jurassic-park
-      POSTGRES_PASSWORD: p@$$w0rd
+      POSTGRES_PASSWORD: jp
       POSTGRES_USER: jurassic-park
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U jurassic-park"]
@@ -23,4 +23,5 @@ services:
     ports:
       - "8888:8888"
     environment:
-      POSTGRES_URL: "postgres://jurassic-park:p@$$w0rd@db:5432/jurassic-park?sslmode=disable"
+      POSTGRES_URL: "postgres://jurassic-park:jp@db:5432/jurassic-park?sslmode=disable"
+      POSTGRES_DEBUG: false
