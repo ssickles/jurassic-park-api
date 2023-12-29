@@ -10,6 +10,10 @@ func SetupRouter(store data.Store) *gin.Engine {
 
 	r.GET("/status", getStatus)
 
+	cageController := CagesController{Store: store}
+	r.GET("/cages", cageController.List)
+	r.POST("/cages", cageController.Create)
+
 	dinosaurController := DinosaursController{Store: store}
 	r.GET("/dinosaurs", dinosaurController.List)
 	r.POST("/dinosaurs", dinosaurController.Create)

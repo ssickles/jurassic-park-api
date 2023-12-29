@@ -9,6 +9,7 @@ func NewStore() (data.Store, error) {
 	}
 
 	return data.Store{
+		Cages:     Cages{Db: db},
 		Dinosaurs: Dinosaurs{Db: db},
 	}, nil
 }

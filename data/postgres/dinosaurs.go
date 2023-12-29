@@ -2,8 +2,13 @@ package postgres
 
 import (
 	"github.com/go-pg/pg/v10"
+	"jurassic-park-api/data"
 	"jurassic-park-api/models"
 )
+
+// Dinosaurs is a postgres implementation of data.Dinosaurs.
+// This ensures that we follow the contract
+var _ data.Dinosaurs = &Dinosaurs{}
 
 type Dinosaurs struct {
 	Db *pg.DB

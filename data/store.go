@@ -3,7 +3,13 @@ package data
 import "jurassic-park-api/models"
 
 type Store struct {
+	Cages     Cages
 	Dinosaurs Dinosaurs
+}
+
+type Cages interface {
+	List() ([]models.Cage, error)
+	Create(cage models.Cage) (*models.Cage, error)
 }
 
 type Dinosaurs interface {
