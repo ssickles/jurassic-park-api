@@ -1,9 +1,10 @@
 package api
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"jurassic-park-api/data"
-	"jurassic-park-api/models"
+	"jurassic-park-api/park"
 	"log"
 	"net/http"
 )
@@ -24,30 +25,37 @@ func (dc DinosaursController) List(context *gin.Context) {
 }
 
 func (dc DinosaursController) Create(context *gin.Context) {
-	var dinosaur models.Dinosaur
-	err := context.BindJSON(&dinosaur)
+	var payload park.CreateDinosaurPayload
+	// First serialize the payload into a CreateDinosaurPayload struct
+	err := context.BindJSON(&payload)
 	if err != nil {
-		log.Printf("error binding dinosaur json: %s\n", err)
+		log.Printf("error binding json for CreateDinosaurPayload: %s\n", err)
 		context.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Invalid json provided for a dinosaur"}})
 		return
 	}
 
-	species, err := dc.Store.Species.Find(dinosaur.SpeciesName)
+	// Then pass the payload to the CreateDinosaur function and allow our park package to handle the business logic
+	createdDinosaur, err := park.CreateDinosaur(dc.Store, payload)
 	if err != nil {
-		log.Printf("error getting species: %s\n", err)
-		context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
-		return
-	}
-	if species == nil {
-		context.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Invalid species name provided"}})
-		return
-	}
-
-	createdDinosaur, err := dc.Store.Dinosaurs.Create(dinosaur)
-	if err != nil {
-		log.Printf("error creating dinosaur: %s\n", err)
-		context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
-		return
+		// We will return a different error message depending on the type of error
+		switch {
+		case errors.As(err, &park.DinosaurNameAlreadyExistsError{}):
+			context.JSON(http.StatusConflict, gin.H{"errors": []string{err.Error()}})
+			return
+		case errors.As(err, &park.InvalidSpeciesNameError{}):
+			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
+			return
+		case errors.As(err, &park.InvalidCageNameError{}):
+			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
+			return
+		case errors.As(err, &park.MismatchedFoodTypeError{}):
+			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
+			return
+		default:
+			log.Printf("%s\n", err)
+			context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
+			return
+		}
 	}
 
 	context.JSON(http.StatusCreated, gin.H{"data": createdDinosaur})

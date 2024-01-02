@@ -20,6 +20,16 @@ func (d *Dinosaurs) ensure() {
 	})
 }
 
+func (d *Dinosaurs) FindByName(name string) (*models.Dinosaur, error) {
+	d.ensure()
+	for _, value := range d.primary {
+		if value.Name == name {
+			return value, nil
+		}
+	}
+	return nil, nil
+}
+
 func (d *Dinosaurs) List() ([]models.Dinosaur, error) {
 	d.ensure()
 	var dinosaurs []models.Dinosaur

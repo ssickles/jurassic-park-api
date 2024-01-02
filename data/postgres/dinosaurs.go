@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"errors"
 	"github.com/go-pg/pg/v10"
 	"jurassic-park-api/data"
 	"jurassic-park-api/models"
@@ -12,6 +13,20 @@ var _ data.Dinosaurs = &Dinosaurs{}
 
 type Dinosaurs struct {
 	Db *pg.DB
+}
+
+func (d Dinosaurs) FindByName(name string) (*models.Dinosaur, error) {
+	var dinosaur models.Dinosaur
+	err := d.Db.Model(&dinosaur).
+		Where("name = ?", name).
+		Select()
+	if err != nil {
+		if errors.Is(err, pg.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &dinosaur, nil
 }
 
 func (d Dinosaurs) List() ([]models.Dinosaur, error) {

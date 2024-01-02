@@ -18,8 +18,12 @@ func (s Species) Find(name string) (*models.Species, error) {
 	err := s.Db.Model(&species).
 		Where(`name = ?`, name).
 		First()
-	if errors.Is(err, pg.ErrNoRows) {
-		return nil, nil
+	if err != nil {
+		if errors.Is(err, pg.ErrNoRows) {
+			return nil, nil
+		} else {
+			return nil, err
+		}
 	}
 	return &species, err
 }

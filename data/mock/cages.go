@@ -9,15 +9,45 @@ import (
 var _ data.Cages = &Cages{}
 
 type Cages struct {
-	primary map[int64]*models.Cage
-	serial  int64
-	init    sync.Once
+	Species   data.Species
+	Dinosaurs data.Dinosaurs
+	primary   map[int64]*models.Cage
+	serial    int64
+	init      sync.Once
 }
 
 func (c *Cages) ensure() {
 	c.init.Do(func() {
 		c.primary = map[int64]*models.Cage{}
 	})
+}
+
+func (c *Cages) FindByName(name string) (*models.Cage, error) {
+	c.ensure()
+	for _, value := range c.primary {
+		if value.Name == name {
+			return value, nil
+		}
+	}
+	return nil, nil
+}
+
+func (c *Cages) GetCageFoodType(id int64) (string, error) {
+	c.ensure()
+	dinosaurs, err := c.Dinosaurs.List()
+	if err != nil {
+		return "", err
+	}
+	for _, dinosaur := range dinosaurs {
+		if dinosaur.CageId == id {
+			species, err := c.Species.Find(dinosaur.SpeciesName)
+			if err != nil {
+				return "", err
+			}
+			return species.FoodType, nil
+		}
+	}
+	return "", nil
 }
 
 func (c *Cages) List() ([]models.Cage, error) {
