@@ -87,6 +87,16 @@ func TestCagesController_Create(t *testing.T) {
 			expectedCode: http.StatusCreated,
 		},
 		{
+			name: "attempt to create a cage with an invalid power status",
+			payload: park.CreateCagePayload{
+				Name:        "east-1",
+				Capacity:    1,
+				PowerStatus: "INVALID",
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectedError: "Invalid cage power status: INVALID, must be ACTIVE or DOWN",
+		},
+		{
 			name: "attempt to create a cage with a name that already exists",
 			setup: func(store data.Store) {
 				_, _ = store.Cages.Create(models.Cage{

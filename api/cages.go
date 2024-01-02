@@ -40,6 +40,9 @@ func (cc CagesController) Create(context *gin.Context) {
 		case errors.As(err, &park.CageNameAlreadyExistsError{}):
 			context.JSON(http.StatusConflict, gin.H{"errors": []string{err.Error()}})
 			return
+		case errors.As(err, &park.InvalidCagePowerStatusError{}):
+			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
+			return
 		default:
 			log.Printf("%s\n", err)
 			context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
