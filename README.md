@@ -14,6 +14,14 @@ The API is pre-configured with a connection to the Postgres db via the `POSTGRES
 
 This is all that is required to run this application. The API will be hosted at http://localhost:8888.
 
+## Example Requests
+In the root directory of the project, there is a file called `scenario.sh`.
+This file contains example requests to the API using `curl`.
+This file can be run using the following command:
+```shell
+sh scenario.sh
+```
+
 ## Migrations
 Database migration management has been added using the [goose](https://github.com/pressly/goose) library.
 All migrations are located in the /migrations directory are configured to run when the docker container starts up.

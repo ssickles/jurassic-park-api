@@ -2,7 +2,7 @@
 
 curl -X POST -H "Content-Type: application/json" -d '{"name":"east-1", "capacity":2, "powerStatus": "INVALID"}' http://localhost:8888/cages
 echo ""
-curl -X POST -H "Content-Type: application/json" -d '{"name":"east-1", "capacity":2, "powerStatus": "DOWN"}' http://localhost:8888/cages
+curl -X POST -H "Content-Type: application/json" -d '{"name":"east-1", "capacity":2, "powerStatus": "ACTIVE"}' http://localhost:8888/cages
 echo ""
 curl -X POST -H "Content-Type: application/json" -d '{"name":"west-1", "capacity":10}' http://localhost:8888/cages
 echo ""
