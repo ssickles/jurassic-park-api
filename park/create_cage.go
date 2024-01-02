@@ -7,7 +7,8 @@ import (
 )
 
 type CreateCagePayload struct {
-	Name string `json:"name" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Capacity int    `json:"capacity" binding:"required,number"`
 }
 
 type CageNameAlreadyExistsError struct {
@@ -20,7 +21,8 @@ func (e CageNameAlreadyExistsError) Error() string {
 
 func CreateCage(store data.Store, payload CreateCagePayload) (*models.Cage, error) {
 	cage := models.Cage{
-		Name: payload.Name,
+		Name:     payload.Name,
+		Capacity: payload.Capacity,
 	}
 
 	existing, err := store.Cages.FindByName(payload.Name)

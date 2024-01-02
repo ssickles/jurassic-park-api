@@ -29,6 +29,17 @@ func (d Dinosaurs) FindByName(name string) (*models.Dinosaur, error) {
 	return &dinosaur, nil
 }
 
+func (d Dinosaurs) FindByCageId(cageId int64) ([]models.Dinosaur, error) {
+	var dinosaurs []models.Dinosaur
+	err := d.Db.Model(&dinosaurs).
+		Where("cage_id = ?", cageId).
+		Select()
+	if err != nil {
+		return nil, err
+	}
+	return dinosaurs, nil
+}
+
 func (d Dinosaurs) List() ([]models.Dinosaur, error) {
 	var dinosaurs []models.Dinosaur
 	err := d.Db.Model(&dinosaurs).

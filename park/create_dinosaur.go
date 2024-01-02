@@ -36,6 +36,14 @@ func (e InvalidCageNameError) Error() string {
 	return fmt.Sprintf("Invalid cage name: %s", e.CageName)
 }
 
+type CageAtCapacityError struct {
+	Capacity int
+}
+
+func (e CageAtCapacityError) Error() string {
+	return fmt.Sprintf("The cage is already at capacity (%d), can't add another dinosaur", e.Capacity)
+}
+
 type MismatchedFoodTypeError struct {
 	CageFoodType     string
 	DinosaurFoodType string
@@ -76,6 +84,14 @@ func CreateDinosaur(store data.Store, payload CreateDinosaurPayload) (*models.Di
 		}
 		if cage == nil {
 			return nil, InvalidCageNameError{CageName: payload.CageName}
+		}
+
+		inCage, err := store.Dinosaurs.FindByCageId(cage.Id)
+		if err != nil {
+			return nil, fmt.Errorf("error getting dinosaurs by cage id (%d): %w", cage.Id, err)
+		}
+		if len(inCage) >= cage.Capacity {
+			return nil, CageAtCapacityError{Capacity: cage.Capacity}
 		}
 
 		// We also need to make sure the dinosaur's food type matches the cage's food type

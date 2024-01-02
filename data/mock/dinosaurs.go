@@ -30,6 +30,17 @@ func (d *Dinosaurs) FindByName(name string) (*models.Dinosaur, error) {
 	return nil, nil
 }
 
+func (d *Dinosaurs) FindByCageId(cageId int64) ([]models.Dinosaur, error) {
+	d.ensure()
+	var dinosaurs []models.Dinosaur
+	for _, value := range d.primary {
+		if value.CageId == cageId {
+			dinosaurs = append(dinosaurs, *value)
+		}
+	}
+	return dinosaurs, nil
+}
+
 func (d *Dinosaurs) List() ([]models.Dinosaur, error) {
 	d.ensure()
 	var dinosaurs []models.Dinosaur

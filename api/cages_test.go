@@ -15,10 +15,12 @@ import (
 
 var testCages = []models.Cage{
 	{
-		Name: "west-1",
+		Name:     "west-1",
+		Capacity: 1,
 	},
 	{
-		Name: "east-1",
+		Name:     "east-1",
+		Capacity: 2,
 	},
 }
 
@@ -79,7 +81,8 @@ func TestCagesController_Create(t *testing.T) {
 		{
 			name: "successful creation of a cage",
 			payload: park.CreateCagePayload{
-				Name: "east-1",
+				Name:     "east-1",
+				Capacity: 1,
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -91,7 +94,8 @@ func TestCagesController_Create(t *testing.T) {
 				})
 			},
 			payload: park.CreateCagePayload{
-				Name: "east-1",
+				Name:     "east-1",
+				Capacity: 1,
 			},
 			expectedCode:  http.StatusConflict,
 			expectedError: "A cage with this name already exists: east-1",
@@ -123,8 +127,9 @@ func TestCagesController_Create(t *testing.T) {
 				assert.NoError(t, err)
 				expected := map[string]models.Cage{
 					"data": {
-						Id:   result["data"].Id,
-						Name: test.payload.Name,
+						Id:       result["data"].Id,
+						Name:     test.payload.Name,
+						Capacity: test.payload.Capacity,
 					},
 				}
 				assert.Equal(t, expected, result)

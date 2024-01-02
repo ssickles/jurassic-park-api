@@ -136,6 +136,21 @@ func TestDinosaursController_Create(t *testing.T) {
 			expectedError: "Invalid cage name: BadCageName",
 		},
 		{
+			name: "attempt to create a dinosaur with a cage that is at capacity",
+			setup: func(store data.Store) {
+				cage, _ := store.Cages.FindByName("west-1")
+				testDinosaurs[0].CageId = cage.Id
+				_, _ = store.Dinosaurs.Create(testDinosaurs[0])
+			},
+			payload: park.CreateDinosaurPayload{
+				Name:        "Rex",
+				SpeciesName: "Tyrannosaurus",
+				CageName:    "west-1",
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectedError: "The cage is already at capacity (1), can't add another dinosaur",
+		},
+		{
 			name: "attempt to create a dinosaur with a food type that doesn't match the cage's food type",
 			setup: func(store data.Store) {
 				cage, _ := store.Cages.FindByName("east-1")

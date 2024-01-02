@@ -22,6 +22,7 @@ type Species interface {
 
 type Dinosaurs interface {
 	FindByName(name string) (*models.Dinosaur, error)
+	FindByCageId(cageId int64) ([]models.Dinosaur, error)
 	List() ([]models.Dinosaur, error)
 	Create(dinosaur models.Dinosaur) (*models.Dinosaur, error)
 }
