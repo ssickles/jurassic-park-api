@@ -69,11 +69,14 @@ The following items are some things that I would have liked to do given more tim
 This package has started as collection of functions to contain the business logic.
 As the application grows, this package will likely evolve into a struct or structs to contain the business logic.
 This refinement is best done as the patterns reveal themselves.
-2. Add more validation errors, provide better error messages, and add error codes.
+2. Refine the logic to optimize for speed and efficiency.
+There are a number of opportunities to reduce the number of database queries, provide proper database indexes, etc.
+These optimizations are best done at the point where we start stress testing the application.
+3. Add more validation errors, provide better error messages, and add error codes.
 I'm also sure there are some edge cases that I haven't covered.
-3. Wrap the database calls in a transaction to ensure that all database calls are atomic.
-4. Continue to add tests for all the API endpoints.
-5. Add authorization so that only builders can create new cages and scientists can create, cage, and view the status of dinosaurs.
+4. Wrap the database calls in a transaction to ensure that all database calls are atomic.
+5. Continue to add tests for all the API endpoints.
+6. Add authorization so that only builders can create new cages and scientists can create, cage, and view the status of dinosaurs.
 
 Bonus Points I did not get to:
 1. Cages know how many dinosaurs are contained.
