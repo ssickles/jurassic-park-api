@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"jurassic-park-api/data"
 	"jurassic-park-api/data/mock"
 	"jurassic-park-api/models"
+	"jurassic-park-api/park"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -67,30 +69,75 @@ func TestCagesController_List(t *testing.T) {
 }
 
 func TestCagesController_Create(t *testing.T) {
-	t.Run("successful create", func(t *testing.T) {
-		// set up the mock store and router
-		store, err := mock.NewStore()
-		assert.NoError(t, err)
-		router := SetupRouter(store)
-
-		// make the request
-		w := httptest.NewRecorder()
-		body, err := json.Marshal(testCages[0])
-		assert.NoError(t, err)
-		req, _ := http.NewRequest(http.MethodPost, "/cages", bytes.NewReader(body))
-		router.ServeHTTP(w, req)
-
-		// assert the response with the created dinosaur
-		assert.Equal(t, http.StatusCreated, w.Code)
-		var result map[string]models.Dinosaur
-		err = json.Unmarshal(w.Body.Bytes(), &result)
-		assert.NoError(t, err)
-		expected := map[string]models.Dinosaur{
-			"data": {
-				Id:   result["data"].Id,
-				Name: testCages[0].Name,
+	tests := []struct {
+		name          string
+		setup         func(store data.Store)
+		payload       park.CreateCagePayload
+		expectedCode  int
+		expectedError string
+	}{
+		{
+			name: "successful creation of a cage",
+			payload: park.CreateCagePayload{
+				Name: "east-1",
 			},
-		}
-		assert.Equal(t, expected, result)
-	})
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "attempt to create a cage with a name that already exists",
+			setup: func(store data.Store) {
+				_, _ = store.Cages.Create(models.Cage{
+					Name: "east-1",
+				})
+			},
+			payload: park.CreateCagePayload{
+				Name: "east-1",
+			},
+			expectedCode:  http.StatusConflict,
+			expectedError: "A cage with this name already exists: east-1",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// set up the mock store and router
+			store, err := mock.NewStore()
+			assert.NoError(t, err)
+			if test.setup != nil {
+				test.setup(store)
+			}
+			router := SetupRouter(store)
+
+			// make the request
+			w := httptest.NewRecorder()
+			body, err := json.Marshal(test.payload)
+			assert.NoError(t, err)
+			req, _ := http.NewRequest(http.MethodPost, "/cages", bytes.NewReader(body))
+			router.ServeHTTP(w, req)
+
+			// assert the response with the created cage
+			assert.Equal(t, test.expectedCode, w.Code)
+			if test.expectedCode == http.StatusCreated {
+				var result map[string]models.Cage
+				err = json.Unmarshal(w.Body.Bytes(), &result)
+				assert.NoError(t, err)
+				expected := map[string]models.Cage{
+					"data": {
+						Id:   result["data"].Id,
+						Name: test.payload.Name,
+					},
+				}
+				assert.Equal(t, expected, result)
+			}
+			if test.expectedError != "" {
+				var result map[string][]string
+				err = json.Unmarshal(w.Body.Bytes(), &result)
+				assert.NoError(t, err)
+				expected := map[string][]string{
+					"errors": {test.expectedError},
+				}
+				assert.Equal(t, expected, result)
+			}
+		})
+	}
 }

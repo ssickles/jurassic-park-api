@@ -1,9 +1,10 @@
 package api
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"jurassic-park-api/data"
-	"jurassic-park-api/models"
+	"jurassic-park-api/park"
 	"log"
 	"net/http"
 )
@@ -24,19 +25,26 @@ func (cc CagesController) List(context *gin.Context) {
 }
 
 func (cc CagesController) Create(context *gin.Context) {
-	var cage models.Cage
-	err := context.BindJSON(&cage)
+	var payload park.CreateCagePayload
+	err := context.BindJSON(&payload)
 	if err != nil {
 		log.Printf("error binding cage json: %s\n", err)
 		context.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Invalid json provided for a cage"}})
 		return
 	}
 
-	createdCage, err := cc.Store.Cages.Create(cage)
+	createdCage, err := park.CreateCage(cc.Store, payload)
 	if err != nil {
-		log.Printf("error creating cage: %s\n", err)
-		context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
-		return
+		// We will return a different error message depending on the type of error
+		switch {
+		case errors.As(err, &park.CageNameAlreadyExistsError{}):
+			context.JSON(http.StatusConflict, gin.H{"errors": []string{err.Error()}})
+			return
+		default:
+			log.Printf("%s\n", err)
+			context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
+			return
+		}
 	}
 
 	context.JSON(http.StatusCreated, gin.H{"data": createdCage})
