@@ -18,5 +18,8 @@ func SetupRouter(store data.Store) *gin.Engine {
 	r.GET("/dinosaurs", dinosaurController.List)
 	r.POST("/dinosaurs", dinosaurController.Create)
 
+	cageAssignmentController := CageAssignmentsController{Store: store}
+	r.GET("/cages/:cage_id/assignments", cageAssignmentController.List)
+
 	return r
 }
