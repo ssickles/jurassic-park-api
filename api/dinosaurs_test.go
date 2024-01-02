@@ -11,19 +11,29 @@ import (
 	"testing"
 )
 
-var testDinosaurs = []models.Dinosaur{
+var testSpecies = []models.Species{
 	{
-		Name:    "Valentino",
-		Species: "velociraptor",
+		Name:     "Velociraptor",
+		FoodType: "carnivore",
 	},
 	{
-		Name:    "Rex",
-		Species: "tyrannosaurus",
+		Name:     "Tyrannosaurus",
+		FoodType: "carnivore",
+	},
+}
+var testDinosaurs = []models.Dinosaur{
+	{
+		Name:        "Valentino",
+		SpeciesName: testSpecies[0].Name,
+	},
+	{
+		Name:        "Rex",
+		SpeciesName: testSpecies[1].Name,
 	},
 }
 
 func TestDinosaursController_List(t *testing.T) {
-	t.Run("no results", func(t *testing.T) {
+	t.Run("there are no dinosaurs yet", func(t *testing.T) {
 		// set up the mock store and router
 		store, err := mock.NewStore()
 		assert.NoError(t, err)
@@ -42,7 +52,7 @@ func TestDinosaursController_List(t *testing.T) {
 		assert.Equal(t, map[string][]models.Dinosaur{"data": nil}, result)
 	})
 
-	t.Run("2 results", func(t *testing.T) {
+	t.Run("2 dinosaurs have been created", func(t *testing.T) {
 		// set up the mock store and router
 		store, err := mock.NewStore()
 		assert.NoError(t, err)
@@ -69,9 +79,14 @@ func TestDinosaursController_List(t *testing.T) {
 }
 
 func TestDinosaursController_Create(t *testing.T) {
-	t.Run("successful create", func(t *testing.T) {
+	t.Run("successful creation of a dinosaur", func(t *testing.T) {
 		// set up the mock store and router
 		store, err := mock.NewStore()
+		// make sure we have our species loaded up in our data store
+		for _, species := range testSpecies {
+			_, err = store.Species.Create(species)
+			assert.NoError(t, err)
+		}
 		assert.NoError(t, err)
 		router := SetupRouter(store)
 
@@ -89,9 +104,9 @@ func TestDinosaursController_Create(t *testing.T) {
 		assert.NoError(t, err)
 		expected := map[string]models.Dinosaur{
 			"data": {
-				Id:      result["data"].Id,
-				Name:    testDinosaurs[0].Name,
-				Species: testDinosaurs[0].Species,
+				Id:          result["data"].Id,
+				Name:        testDinosaurs[0].Name,
+				SpeciesName: testDinosaurs[0].SpeciesName,
 			},
 		}
 		assert.Equal(t, expected, result)

@@ -16,7 +16,8 @@ type Cages struct {
 
 func (c Cages) List() ([]models.Cage, error) {
 	var cages []models.Cage
-	err := c.Db.Model(&cages).Select()
+	err := c.Db.Model(&cages).
+		Select()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +26,9 @@ func (c Cages) List() ([]models.Cage, error) {
 
 func (c Cages) Create(cage models.Cage) (*models.Cage, error) {
 	var createdCage models.Cage
-	_, err := c.Db.Model(&cage).Returning("*").Insert(&createdCage)
+	_, err := c.Db.Model(&cage).
+		Returning("*").
+		Insert(&createdCage)
 	if err != nil {
 		return nil, err
 	}

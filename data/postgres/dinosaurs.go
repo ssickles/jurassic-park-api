@@ -16,7 +16,8 @@ type Dinosaurs struct {
 
 func (d Dinosaurs) List() ([]models.Dinosaur, error) {
 	var dinosaurs []models.Dinosaur
-	err := d.Db.Model(&dinosaurs).Select()
+	err := d.Db.Model(&dinosaurs).
+		Select()
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +26,9 @@ func (d Dinosaurs) List() ([]models.Dinosaur, error) {
 
 func (d Dinosaurs) Create(dinosaur models.Dinosaur) (*models.Dinosaur, error) {
 	var createdDinosaur models.Dinosaur
-	_, err := d.Db.Model(&dinosaur).Returning("*").Insert(&createdDinosaur)
+	_, err := d.Db.Model(&dinosaur).
+		Returning("*").
+		Insert(&createdDinosaur)
 	if err != nil {
 		return nil, err
 	}

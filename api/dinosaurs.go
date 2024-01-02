@@ -32,6 +32,17 @@ func (dc DinosaursController) Create(context *gin.Context) {
 		return
 	}
 
+	species, err := dc.Store.Species.Find(dinosaur.SpeciesName)
+	if err != nil {
+		log.Printf("error getting species: %s\n", err)
+		context.JSON(http.StatusInternalServerError, gin.H{"errors": []string{"An unexpected error occurred"}})
+		return
+	}
+	if species == nil {
+		context.JSON(http.StatusBadRequest, gin.H{"errors": []string{"Invalid species name provided"}})
+		return
+	}
+
 	createdDinosaur, err := dc.Store.Dinosaurs.Create(dinosaur)
 	if err != nil {
 		log.Printf("error creating dinosaur: %s\n", err)
