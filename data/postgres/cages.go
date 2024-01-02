@@ -15,6 +15,20 @@ type Cages struct {
 	Db *pg.DB
 }
 
+func (c Cages) Find(id int64) (*models.Cage, error) {
+	var cage models.Cage
+	err := c.Db.Model(&cage).
+		Where("id = ?", id).
+		Select()
+	if err != nil {
+		if errors.Is(err, pg.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &cage, nil
+}
+
 func (c Cages) FindByName(name string) (*models.Cage, error) {
 	var cage models.Cage
 	err := c.Db.Model(&cage).

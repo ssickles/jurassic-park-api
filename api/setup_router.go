@@ -20,6 +20,7 @@ func SetupRouter(store data.Store) *gin.Engine {
 
 	cageAssignmentController := CageAssignmentsController{Store: store}
 	r.GET("/cages/:cage_id/assignments", cageAssignmentController.List)
+	r.POST("/cages/:cage_id/assignments", cageAssignmentController.Create)
 
 	return r
 }

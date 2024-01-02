@@ -9,6 +9,7 @@ type Store struct {
 }
 
 type Cages interface {
+	Find(id int64) (*models.Cage, error)
 	FindByName(name string) (*models.Cage, error)
 	GetCageFoodType(id int64) (string, error)
 	List() ([]models.Cage, error)
@@ -25,4 +26,5 @@ type Dinosaurs interface {
 	FindByCageId(cageId int64) ([]models.Dinosaur, error)
 	List() ([]models.Dinosaur, error)
 	Create(dinosaur models.Dinosaur) (*models.Dinosaur, error)
+	Update(dinosaur models.Dinosaur) error
 }

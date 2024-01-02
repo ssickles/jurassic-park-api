@@ -22,6 +22,11 @@ func (c *Cages) ensure() {
 	})
 }
 
+func (c *Cages) Find(id int64) (*models.Cage, error) {
+	c.ensure()
+	return c.primary[id], nil
+}
+
 func (c *Cages) FindByName(name string) (*models.Cage, error) {
 	c.ensure()
 	for _, value := range c.primary {

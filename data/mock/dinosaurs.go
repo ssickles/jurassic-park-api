@@ -57,3 +57,9 @@ func (d *Dinosaurs) Create(dinosaur models.Dinosaur) (*models.Dinosaur, error) {
 	d.primary[d.serial] = &dinosaur
 	return &dinosaur, nil
 }
+
+func (d *Dinosaurs) Update(dinosaur models.Dinosaur) error {
+	d.ensure()
+	d.primary[dinosaur.Id] = &dinosaur
+	return nil
+}

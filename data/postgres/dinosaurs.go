@@ -60,3 +60,13 @@ func (d Dinosaurs) Create(dinosaur models.Dinosaur) (*models.Dinosaur, error) {
 	}
 	return &createdDinosaur, nil
 }
+
+func (d Dinosaurs) Update(dinosaur models.Dinosaur) error {
+	_, err := d.Db.Model(&dinosaur).
+		WherePK().
+		Update()
+	if err != nil {
+		return err
+	}
+	return nil
+}
