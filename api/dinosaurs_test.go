@@ -136,6 +136,16 @@ func TestDinosaursController_Create(t *testing.T) {
 			expectedError: "Invalid cage name: BadCageName",
 		},
 		{
+			name: "attempt to create a dinosaur with a cage that is not active",
+			payload: park.CreateDinosaurPayload{
+				Name:        "Valentino",
+				SpeciesName: "Velociraptor",
+				CageName:    "east-2",
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectedError: "Can not assign a dinosaur to this cage (east-2), it is not active",
+		},
+		{
 			name: "attempt to create a dinosaur with a cage that is at capacity",
 			setup: func(store data.Store) {
 				cage, _ := store.Cages.FindByName("west-1")

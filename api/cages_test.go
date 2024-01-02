@@ -15,12 +15,19 @@ import (
 
 var testCages = []models.Cage{
 	{
-		Name:     "west-1",
-		Capacity: 1,
+		Name:        "west-1",
+		Capacity:    1,
+		PowerStatus: models.PowerStatusActive,
 	},
 	{
-		Name:     "east-1",
-		Capacity: 2,
+		Name:        "east-1",
+		Capacity:    2,
+		PowerStatus: models.PowerStatusActive,
+	},
+	{
+		Name:        "east-2",
+		Capacity:    3,
+		PowerStatus: models.PowerStatusDown,
 	},
 }
 
@@ -44,7 +51,7 @@ func TestCagesController_List(t *testing.T) {
 		assert.Equal(t, map[string][]models.Cage{"data": nil}, result)
 	})
 
-	t.Run("2 results", func(t *testing.T) {
+	t.Run("3 results", func(t *testing.T) {
 		// set up the mock store and router
 		store, err := mock.NewStore()
 		assert.NoError(t, err)
@@ -66,7 +73,7 @@ func TestCagesController_List(t *testing.T) {
 		var result map[string][]models.Cage
 		err = json.Unmarshal(w.Body.Bytes(), &result)
 		assert.NoError(t, err)
-		assert.Equal(t, 2, len(result["data"]))
+		assert.Equal(t, 3, len(result["data"]))
 	})
 }
 

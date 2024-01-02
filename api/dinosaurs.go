@@ -48,6 +48,9 @@ func (dc DinosaursController) Create(context *gin.Context) {
 		case errors.As(err, &park.InvalidCageNameError{}):
 			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
 			return
+		case errors.As(err, &park.CageNotActiveError{}):
+			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
+			return
 		case errors.As(err, &park.CageAtCapacityError{}):
 			context.JSON(http.StatusBadRequest, gin.H{"errors": []string{err.Error()}})
 			return

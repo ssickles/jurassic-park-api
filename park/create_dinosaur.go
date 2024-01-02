@@ -36,23 +36,6 @@ func (e InvalidCageNameError) Error() string {
 	return fmt.Sprintf("Invalid cage name: %s", e.CageName)
 }
 
-type CageAtCapacityError struct {
-	Capacity int
-}
-
-func (e CageAtCapacityError) Error() string {
-	return fmt.Sprintf("The cage is already at capacity (%d), can't add another dinosaur", e.Capacity)
-}
-
-type MismatchedFoodTypeError struct {
-	CageFoodType     string
-	DinosaurFoodType string
-}
-
-func (e MismatchedFoodTypeError) Error() string {
-	return fmt.Sprintf("The dinosaur's food type (%s) does not match the cage's food type (%s)", e.DinosaurFoodType, e.CageFoodType)
-}
-
 func CreateDinosaur(store data.Store, payload CreateDinosaurPayload) (*models.Dinosaur, error) {
 	existing, err := store.Dinosaurs.FindByName(payload.Name)
 	if err != nil {

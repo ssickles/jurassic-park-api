@@ -6,7 +6,36 @@ import (
 	"jurassic-park-api/models"
 )
 
+type CageNotActiveError struct {
+	CageName string
+}
+
+func (e CageNotActiveError) Error() string {
+	return fmt.Sprintf("Can not assign a dinosaur to this cage (%s), it is not active", e.CageName)
+}
+
+type CageAtCapacityError struct {
+	Capacity int
+}
+
+func (e CageAtCapacityError) Error() string {
+	return fmt.Sprintf("The cage is already at capacity (%d), can't add another dinosaur", e.Capacity)
+}
+
+type MismatchedFoodTypeError struct {
+	CageFoodType     string
+	DinosaurFoodType string
+}
+
+func (e MismatchedFoodTypeError) Error() string {
+	return fmt.Sprintf("The dinosaur's food type (%s) does not match the cage's food type (%s)", e.DinosaurFoodType, e.CageFoodType)
+}
+
 func validateCageAssignment(store data.Store, cage models.Cage, species models.Species) error {
+	if cage.PowerStatus != models.PowerStatusActive {
+		return CageNotActiveError{CageName: cage.Name}
+	}
+
 	inCage, err := store.Dinosaurs.FindByCageId(cage.Id)
 	if err != nil {
 		return fmt.Errorf("error getting dinosaurs by cage id (%d): %w", cage.Id, err)
